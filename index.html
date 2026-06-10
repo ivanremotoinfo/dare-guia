@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DARE / Guia de Recolhimento | SuporteADV</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d0d0d; color: #e0e0e0; padding: 24px 16px; }
+  .container { max-width: 750px; margin: 0 auto; }
+
+  .header { text-align: center; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid #222; }
+  h1 { font-size: 1.5rem; color: #008080; margin-bottom: 6px; }
+  .subtitle { font-size: 0.88rem; color: #888; line-height: 1.5; }
+  .brand { font-size: 0.78rem; margin-top: 8px; color: #555; }
+  .brand span.s { color: #8B00FF; font-weight: 700; }
+  .brand span.a { color: #008080; font-weight: 700; }
+
+  .card { background: #111; border-radius: 10px; border: 1px solid #222; border-left: 3px solid #8B00FF; padding: 20px 22px; margin-bottom: 14px; transition: border-left-color 0.2s; }
+  .card:hover { border-left-color: #008080; }
+  .card-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 16px; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  @media (max-width: 520px) { .form-grid { grid-template-columns: 1fr; } }
+  .field.full { grid-column: 1 / -1; }
+
+  .field label { display: block; font-size: 0.78rem; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input, .field select {
+    width: 100%; padding: 9px 11px; border: 1.5px solid #333; border-radius: 6px;
+    font-size: 0.95rem; color: #fff; background: #1a1a1a; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: #008080; box-shadow: 0 0 0 2px rgba(0,128,128,0.2); }
+  .field select option { background: #1a1a1a; }
+
+  .info-box { background: #0d1a1a; border: 1px solid #1a3a3a; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; font-size: 0.82rem; color: #666; line-height: 1.6; }
+  .info-box b { color: #008080; }
+
+  /* Tabs tipo guia */
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .tab { padding: 8px 16px; border-radius: 8px; border: 1.5px solid #333; font-size: 0.78rem; font-weight: 700; cursor: pointer; color: #888; background: #1a1a1a; transition: all 0.18s; text-transform: uppercase; }
+  .tab:hover { border-color: #008080; color: #008080; }
+  .tab.ativo { background: #008080; border-color: #008080; color: #fff; }
+
+  button.calcular { background: #008080; color: #fff; border: none; padding: 10px 26px; border-radius: 6px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.07em; cursor: pointer; transition: background 0.18s; text-transform: uppercase; }
+  button.calcular:hover { background: #006666; box-shadow: 0 0 10px rgba(0,128,128,0.4); }
+
+  /* Resultado */
+  .resultado { background: #0a1a0a; border: 1px solid #1a4a1a; border-radius: 10px; padding: 20px 22px; margin-top: 14px; display: none; }
+  .resultado.visible { display: block; }
+  .resultado-titulo { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: #008080; font-weight: 700; margin-bottom: 16px; }
+
+  /* Guia visual */
+  .guia-visual {
+    background: #fff; color: #000; border-radius: 10px; padding: 20px;
+    margin-bottom: 16px; font-family: 'Courier New', monospace;
+  }
+  .guia-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 14px; }
+  .guia-header .gh-titulo { font-size: 1rem; font-weight: 700; }
+  .guia-header .gh-estado { font-size: 0.82rem; color: #555; }
+  .guia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .guia-campo { border: 1px solid #ccc; padding: 6px 10px; border-radius: 4px; }
+  .guia-campo .gc-label { font-size: 0.62rem; color: #888; text-transform: uppercase; margin-bottom: 2px; }
+  .guia-campo .gc-valor { font-size: 0.88rem; font-weight: 700; color: #000; }
+  .guia-total { background: #1a1a1a; color: #fff; border-radius: 6px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .guia-total .gt-label { font-size: 0.78rem; color: #aaa; }
+  .guia-total .gt-valor { font-size: 1.3rem; font-weight: 700; color: #00ff00; }
+  .guia-obs { font-size: 0.72rem; color: #888; margin-top: 8px; font-family: inherit; }
+
+  .comp-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .comp-item { display: flex; justify-content: space-between; padding: 9px 14px; background: #111; border-radius: 6px; border-left: 3px solid #333; }
+  .comp-item.destaque { border-left-color: #008080; }
+  .comp-item.total { background: #0d1a0d; border-left-color: #00ff00; }
+  .comp-item .ci-nome { font-size: 0.85rem; color: #888; }
+  .comp-item .ci-valor { font-size: 0.95rem; font-weight: 700; font-family: 'Courier New', monospace; color: #008080; }
+  .comp-item.total .ci-nome { color: #fff; font-weight: 700; }
+  .comp-item.total .ci-valor { color: #00ff00; font-size: 1.05rem; }
+
+  .btn-copiar { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 7px 16px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; margin-top: 10px; }
+  .btn-copiar:hover { border-color: #008080; color: #008080; }
+
+  .erro { background: #1a0a0a; border: 1px solid #4a1a1a; border-radius: 8px; padding: 14px 16px; color: #ff6666; font-size: 0.88rem; margin-top: 14px; display: none; }
+  .erro.visible { display: block; }
+  .aviso { font-size: 0.72rem; color: #444; margin-top: 12px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>DARE / Guia de Recolhimento</h1>
+    <p class="subtitle">Calcule guias de recolhimento estaduais (DARE), custas judiciais, ITBI, ITCMD e outros tributos com multa e juros por atraso.</p>
+    <p class="brand"><span class="s">suporte</span><span class="a">ADV</span>.br — Ferramentas para Advogados</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Tipo de Guia</div>
+    <div class="tabs" id="tabs"></div>
+    <div class="info-box" id="info-tipo">Selecione o tipo de guia.</div>
+
+    <div class="card-label">Dados</div>
+    <div class="form-grid" id="form-campos"></div>
+
+    <button class="calcular" onclick="calcular()">CALCULAR</button>
+  </div>
+
+  <div class="erro" id="erro"></div>
+
+  <div class="resultado" id="resultado">
+    <div class="resultado-titulo" id="res-titulo">Guia de Recolhimento</div>
+
+    <!-- Guia visual -->
+    <div class="guia-visual" id="guia-visual"></div>
+
+    <div class="resultado-titulo">Composição</div>
+    <div class="comp-lista" id="comp-lista"></div>
+
+    <button class="btn-copiar" onclick="copiarDados()">📋 Copiar dados para área de transferência</button>
+
+    <p class="aviso" id="aviso-tipo">⚠️ Esta ferramenta fornece estimativa dos valores a recolher. Sempre confirme o valor exato e o código de receita no site da Secretaria da Fazenda ou tribunal competente antes de efetuar o pagamento.</p>
+  </div>
+
+</div>
+
+<script>
+const SELIC_MES = 0.00875; // ~10,5% a.a. estimado
+const SM = 1518;
+
+const tiposGuia = [
+  {
+    id: 'custas_judiciais', nome: 'Custas Judiciais',
+    info: '<b>Custas Judiciais:</b> Taxa judiciária para ajuizamento de ações estaduais. Calculada sobre o valor da causa com mínimo e máximo.',
+    campos: ['valorCausa', 'estado', 'dataVenc', 'dataCalc'],
+    calcular: (d) => {
+      const tabelas = {
+        BA: { pct: 0.02, min: 50, max: 3000, nome: 'TJBA' },
+        SP: { pct: 0.02, min: 75, max: 85373, nome: 'TJSP' },
+        RJ: { pct: 0.02, min: 60, max: 50000, nome: 'TJRJ' },
+        MG: { pct: 0.015, min: 45, max: 30000, nome: 'TJMG' },
+        outros: { pct: 0.02, min: 55, max: 20000, nome: 'Tribunal' },
+      };
+      const t = tabelas[d.estado] || tabelas.outros;
+      let taxa = d.valorCausa * t.pct;
+      taxa = Math.max(taxa, t.min);
+      taxa = Math.min(taxa, t.max);
+      return { principal: taxa, descricao: `${t.nome} — ${(t.pct*100).toFixed(1)}% s/ valor da causa`, codigo: 'DARE-JUD' };
+    }
+  },
+  {
+    id: 'itbi', nome: 'ITBI',
+    info: '<b>ITBI — Imposto sobre Transmissão de Bens Imóveis:</b> Cobrado pelo município na compra e venda de imóveis. Alíquota varia por município (geralmente 2% a 3%).',
+    campos: ['valorImovel', 'aliquota', 'municipio', 'dataVenc', 'dataCalc'],
+    calcular: (d) => {
+      const imposto = d.valorImovel * (d.aliquota / 100);
+      return { principal: imposto, descricao: `ITBI — ${d.aliquota}% s/ valor do imóvel`, codigo: 'ITBI' };
+    }
+  },
+  {
+    id: 'itcmd', nome: 'ITCMD',
+    info: '<b>ITCMD — Imposto sobre Transmissão Causa Mortis e Doação:</b> Estadual. Incide sobre heranças e doações. Alíquota varia por estado (1% a 8%).',
+    campos: ['valorTransmissao', 'aliquotaItcmd', 'estado', 'dataVenc', 'dataCalc'],
+    calcular: (d) => {
+      const imposto = d.valorTransmissao * (d.aliquotaItcmd / 100);
+      return { principal: imposto, descricao: `ITCMD — ${d.aliquotaItcmd}% s/ valor da transmissão`, codigo: 'ITCMD' };
+    }
+  },
+  {
+    id: 'custas_registro', nome: 'Custas de Registro',
+    info: '<b>Custas de Registro em Cartório:</b> Emolumentos para registro de imóveis, escrituras e outros atos notariais. Baseado na tabela de emolumentos estadual.',
+    campos: ['valorAto', 'tipoAto', 'estado', 'dataVenc', 'dataCalc'],
+    calcular: (d) => {
+      const tabela = {
+        escritura: { pct: 0.015, min: 200 },
+        registro_imovel: { pct: 0.01, min: 150 },
+        inventario: { pct: 0.02, min: 300 },
+        divorcio: { pct: 0.01, min: 400 },
+      };
+      const t = tabela[d.tipoAto] || { pct: 0.01, min: 150 };
+      const val = Math.max(d.valorAto * t.pct, t.min);
+      return { principal: val, descricao: `Emolumentos — ${(t.pct*100).toFixed(1)}% s/ valor do ato`, codigo: 'EMO-CART' };
+    }
+  },
+  {
+    id: 'dare_generico', nome: 'DARE Genérico',
+    info: '<b>DARE Genérico:</b> Para qualquer tributo estadual. Informe o valor principal e calcule automaticamente multa e juros de mora por atraso.',
+    campos: ['valorPrincipal', 'codigoReceita', 'estado', 'dataVenc', 'dataCalc'],
+    calcular: (d) => {
+      return { principal: d.valorPrincipal, descricao: `Tributo estadual — Código ${d.codigoReceita || 'N/I'}`, codigo: d.codigoReceita || 'DARE' };
+    }
+  },
+];
+
+let tipoAtual = tiposGuia[0];
+
+function popularTabs() {
+  const wrap = document.getElementById('tabs');
+  wrap.innerHTML = '';
+  tiposGuia.forEach(t => {
+    const div = document.createElement('div');
+    div.className = 'tab' + (t.id === tipoAtual.id ? ' ativo' : '');
+    div.textContent = t.nome;
+    div.onclick = () => { tipoAtual = t; popularTabs(); popularForm(); document.getElementById('resultado').classList.remove('visible'); };
+    wrap.appendChild(div);
+  });
+}
+
+function popularForm() {
+  document.getElementById('info-tipo').innerHTML = tipoAtual.info;
+  const form = document.getElementById('form-campos');
+  form.innerHTML = '';
+
+  const campoDefs = {
+    valorCausa: { label: 'Valor da causa (R$)', type: 'number', ph: 'Ex: 50000', id: 'f-valorCausa' },
+    valorImovel: { label: 'Valor do imóvel (R$)', type: 'number', ph: 'Ex: 300000', id: 'f-valorImovel' },
+    valorTransmissao: { label: 'Valor da transmissão (R$)', type: 'number', ph: 'Ex: 150000', id: 'f-valorTransmissao' },
+    valorAto: { label: 'Valor do ato (R$)', type: 'number', ph: 'Ex: 200000', id: 'f-valorAto' },
+    valorPrincipal: { label: 'Valor principal (R$)', type: 'number', ph: 'Ex: 1000', id: 'f-valorPrincipal' },
+    aliquota: { label: 'Alíquota ITBI (%)', type: 'number', ph: 'Ex: 2', id: 'f-aliquota', val: '2' },
+    aliquotaItcmd: { label: 'Alíquota ITCMD (%)', type: 'number', ph: 'Ex: 4', id: 'f-aliquotaItcmd', val: '4' },
+    municipio: { label: 'Município', type: 'text', ph: 'Ex: Salvador', id: 'f-municipio' },
+    codigoReceita: { label: 'Código de receita', type: 'text', ph: 'Ex: 1120', id: 'f-codigoReceita' },
+    estado: { label: 'Estado', type: 'select', id: 'f-estado', opts: [['BA','Bahia'],['SP','São Paulo'],['RJ','Rio de Janeiro'],['MG','Minas Gerais'],['RS','Rio Grande do Sul'],['outros','Outros']] },
+    tipoAto: { label: 'Tipo de ato', type: 'select', id: 'f-tipoAto', opts: [['escritura','Escritura pública'],['registro_imovel','Registro de imóvel'],['inventario','Inventário'],['divorcio','Divórcio/Separação']] },
+    dataVenc: { label: 'Data de vencimento original', type: 'date', id: 'f-dataVenc' },
+    dataCalc: { label: 'Data de pagamento/cálculo', type: 'date', id: 'f-dataCalc' },
+  };
+
+  tipoAtual.campos.forEach(c => {
+    const def = campoDefs[c];
+    if (!def) return;
+    const div = document.createElement('div');
+    div.className = 'field';
+    if (def.type === 'select') {
+      div.innerHTML = `<label>${def.label}</label><select id="${def.id}">${def.opts.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('')}</select>`;
+    } else {
+      div.innerHTML = `<label>${def.label}</label><input type="${def.type}" id="${def.id}" placeholder="${def.ph||''}" step="0.01" min="0" ${def.val?`value="${def.val}"`:''}>`;
+    }
+    form.appendChild(div);
+  });
+
+  // Datas padrão
+  const hoje = new Date();
+  const venc = document.getElementById('f-dataVenc');
+  const calc = document.getElementById('f-dataCalc');
+  if (venc) venc.value = new Date(hoje.getFullYear(), hoje.getMonth()-1, 1).toISOString().split('T')[0];
+  if (calc) calc.value = hoje.toISOString().split('T')[0];
+}
+
+function getVal(id) {
+  const el = document.getElementById(id);
+  if (!el) return undefined;
+  if (el.tagName === 'SELECT') return el.value;
+  const v = parseFloat(el.value);
+  return isNaN(v) ? el.value : v;
+}
+
+function fmtMoeda(v) { return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+function fmtData(d) { return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' }); }
+
+function showErro(msg) {
+  document.getElementById('erro').textContent = msg;
+  document.getElementById('erro').classList.add('visible');
+  document.getElementById('resultado').classList.remove('visible');
+}
+function hideErro() { document.getElementById('erro').classList.remove('visible'); }
+
+function calcular() {
+  hideErro();
+
+  const dados = {};
+  tipoAtual.campos.forEach(c => {
+    const mapa = { valorCausa:'f-valorCausa', valorImovel:'f-valorImovel', valorTransmissao:'f-valorTransmissao', valorAto:'f-valorAto', valorPrincipal:'f-valorPrincipal', aliquota:'f-aliquota', aliquotaItcmd:'f-aliquotaItcmd', municipio:'f-municipio', codigoReceita:'f-codigoReceita', estado:'f-estado', tipoAto:'f-tipoAto', dataVenc:'f-dataVenc', dataCalc:'f-dataCalc' };
+    dados[c] = getVal(mapa[c]);
+  });
+
+  // Valida valor principal
+  const valorPrincipalKey = ['valorCausa','valorImovel','valorTransmissao','valorAto','valorPrincipal'].find(k => tipoAtual.campos.includes(k));
+  if (!valorPrincipalKey || !dados[valorPrincipalKey] || dados[valorPrincipalKey] <= 0) return showErro('Informe o valor principal.');
+
+  const dataVencStr = dados.dataVenc;
+  const dataCalcStr = dados.dataCalc;
+  if (!dataVencStr || !dataCalcStr) return showErro('Informe as datas.');
+
+  const dataVenc = new Date(dataVencStr+'T12:00:00');
+  const dataCalc = new Date(dataCalcStr+'T12:00:00');
+
+  const res = tipoAtual.calcular(dados);
+  const principal = res.principal;
+
+  // Multa e juros por atraso
+  let multa = 0, juros = 0;
+  const emAtraso = dataCalc > dataVenc;
+  if (emAtraso) {
+    const diasAtraso = Math.ceil((dataCalc - dataVenc) / 86400000);
+    const mesesAtraso = diasAtraso / 30;
+    multa = principal * 0.02; // 2% multa mora
+    juros = principal * SELIC_MES * mesesAtraso;
+  }
+
+  const total = principal + multa + juros;
+
+  // Guia visual
+  const estado = dados.estado || 'BR';
+  const nomeEstados = { BA:'Bahia', SP:'São Paulo', RJ:'Rio de Janeiro', MG:'Minas Gerais', RS:'Rio Grande do Sul', outros:'Estado' };
+  document.getElementById('guia-visual').innerHTML = `
+    <div class="guia-header">
+      <div class="gh-titulo">GUIA DE RECOLHIMENTO — ${res.codigo}</div>
+      <div class="gh-estado">${nomeEstados[estado]||estado} | ${new Date().toLocaleDateString('pt-BR')}</div>
+    </div>
+    <div class="guia-grid">
+      <div class="guia-campo"><div class="gc-label">Código de receita</div><div class="gc-valor">${res.codigo}</div></div>
+      <div class="guia-campo"><div class="gc-label">Vencimento</div><div class="gc-valor">${fmtData(dataVenc)}</div></div>
+      <div class="guia-campo"><div class="gc-label">Valor principal</div><div class="gc-valor">${fmtMoeda(principal)}</div></div>
+      <div class="guia-campo"><div class="gc-label">Multa + Juros</div><div class="gc-valor">${fmtMoeda(multa + juros)}</div></div>
+    </div>
+    <div style="font-size:0.78rem;color:#888;margin-bottom:8px">${res.descricao}</div>
+    <div class="guia-total">
+      <div class="gt-label">TOTAL A RECOLHER</div>
+      <div class="gt-valor">${fmtMoeda(total)}</div>
+    </div>
+    <div class="guia-obs">${emAtraso ? `⚠️ Guia em atraso — ${Math.ceil((dataCalc-dataVenc)/86400000)} dias | Multa: ${fmtMoeda(multa)} | Juros: ${fmtMoeda(juros)}` : '✅ Guia dentro do prazo'}</div>`;
+
+  // Composição
+  const lista = document.getElementById('comp-lista');
+  lista.innerHTML = '';
+  const addItem = (nome, valor, dest=false, tot=false) => {
+    const div = document.createElement('div');
+    div.className = `comp-item${dest?' destaque':''}${tot?' total':''}`;
+    div.innerHTML = `<span class="ci-nome">${nome}</span><span class="ci-valor">${fmtMoeda(valor)}</span>`;
+    lista.appendChild(div);
+  };
+  addItem(`Principal — ${res.descricao}`, principal, true);
+  if (emAtraso) {
+    addItem('Multa de mora (2%)', multa);
+    addItem(`Juros SELIC (~${(SELIC_MES*100*12).toFixed(1)}% a.a.)`, juros);
+  }
+  addItem('TOTAL A RECOLHER', total, false, true);
+
+  document.getElementById('res-titulo').textContent = `Guia — ${tipoAtual.nome}`;
+  document.getElementById('resultado').classList.add('visible');
+}
+
+function copiarDados() {
+  const gv = document.getElementById('guia-visual');
+  const texto = gv.innerText;
+  navigator.clipboard.writeText(texto).then(() => {
+    const btn = document.querySelector('.btn-copiar');
+    btn.textContent = '✅ Copiado!';
+    setTimeout(() => btn.textContent = '📋 Copiar dados para área de transferência', 2000);
+  });
+}
+
+popularTabs();
+popularForm();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const f = document.activeElement; if (f && (f.tagName==='INPUT'||f.tagName==='SELECT')) calcular(); }
+});
+</script>
+</body>
+</html>
